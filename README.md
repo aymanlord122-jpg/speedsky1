@@ -1,773 +1,503 @@
-import 'dart:async';
-import 'dart:math';
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  google-site-verification: googlef691874985c7a69c.html
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<script src="config.js"></script>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>SpeedUp</title>
+<style>
+:root{--bg:#0b1220;--card:#131c31;--line:#22304f;--txt:#e8eefc;--mut:#8ea0c6;--blue:#38bdf8;--green:#34d399;--red:#f87171;--amber:#fbbf24}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;padding:env(safe-area-inset-top) 14px calc(20px + env(safe-area-inset-bottom))}
+.wrap{max-width:560px;margin:0 auto}
+h1{font-size:18px;margin:16px 0 10px;text-align:center}
+.tabs{display:flex;gap:6px;background:var(--card);border-radius:12px;padding:4px;margin-bottom:12px}
+.tabs button{flex:1;border:0;background:none;color:var(--mut);padding:10px;border-radius:9px;font:inherit;font-weight:600}
+.tabs button.on{background:var(--line);color:var(--txt)}
+.card{background:rgba(19,28,49,.78);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.info{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:14px}
+.info b{color:var(--mut);font-weight:500}
+.info span{direction:ltr;text-align:left;word-break:break-all}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.m{background:rgba(14,22,40,.72);border-radius:12px;padding:12px;text-align:center}
+.m small{color:var(--mut);display:block;font-size:12px}
+.m .v{font-size:26px;font-weight:700;direction:ltr;margin-top:4px}
+.m .u{font-size:12px;color:var(--mut)}
+.big{text-align:center;padding:10px 0}
+.big .v{font-size:56px;font-weight:800;direction:ltr;color:var(--blue)}
+.big .p{color:var(--mut);font-size:14px;min-height:20px}
+.bar{height:6px;background:#0e1628;border-radius:6px;overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;width:0;background:var(--blue);transition:width .2s}
+.go{width:100%;border:0;border-radius:12px;padding:14px;font:inherit;font-weight:700;font-size:16px;background:var(--blue);color:#04202e}
+.go.stop{background:var(--red);color:#2b0606}
+.go:disabled{opacity:.6}
+canvas{width:100%;height:220px;display:block;background:#0e1628;border-radius:10px}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--mut);margin-top:8px;flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-inline-end:5px}
+.status{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px}
+.dot{width:14px;height:14px;border-radius:50%;background:var(--mut)}
+.dot.ok{background:var(--green);box-shadow:0 0 10px var(--green)}
+.dot.bad{background:var(--red);box-shadow:0 0 12px var(--red);animation:b 1s infinite}
+@keyframes b{50%{opacity:.35}}
+.log{font-size:13px;max-height:220px;overflow:auto}
+.log div{padding:7px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px}
+.log .r{color:var(--red)}.log .g{color:var(--green)}
+.note{font-size:12px;color:var(--mut);line-height:1.7}
+.hide{display:none}
+.bgart{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.6}
+.bgart svg{width:100%;height:100%;display:block}
+.wrap{position:relative;z-index:1}
+.sig{animation:sig 2.4s ease-in-out infinite}
+@keyframes sig{0%,100%{opacity:.25}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.sig{animation:none}}
+.big .go{margin-top:2px}
+.gsvg{width:100%;max-width:360px;display:block;margin:0 auto}
+.dl{display:block;text-align:center;text-decoration:none;background:var(--green);color:#04281c;font-weight:700;padding:13px;border-radius:12px;margin-bottom:8px}
+.dl.alt{background:var(--line);color:var(--txt)}
+</style>
+</head>
+<body>
+<div class="bgart" aria-hidden="true"><svg viewBox="0 0 400 800" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="eg" cx="50%" cy="30%" r="75%"><stop offset="0" stop-color="#2563eb" stop-opacity=".55"/><stop offset="1" stop-color="#0b1220" stop-opacity="0"/></radialGradient><clipPath id="ec"><circle cx="200" cy="760" r="340"/></clipPath></defs><circle cx="200" cy="760" r="340" fill="url(#eg)"/><circle cx="200" cy="760" r="340" fill="none" stroke="#38bdf8" stroke-opacity=".55" stroke-width="1.5"/><circle cx="200" cy="760" r="348" fill="none" stroke="#38bdf8" stroke-opacity=".18"/><g clip-path="url(#ec)"><g fill="none" stroke="#38bdf8" stroke-opacity=".28" stroke-width="1"><ellipse cx="200" cy="760" rx="70" ry="340"/><ellipse cx="200" cy="760" rx="150" ry="340"/><ellipse cx="200" cy="760" rx="250" ry="340"/><line x1="200" y1="420" x2="200" y2="1100"/><path d="M-128.4 672.0Q200 786.9 528.4 672.0"/><path d="M-94.4 590.0Q200 693.1 494.4 590.0"/><path d="M-40.4 519.6Q200 603.7 440.4 519.6"/><path d="M30.0 465.6Q200 525.1 370.0 465.6"/></g><g fill="#38bdf8" fill-opacity=".16"><path d="M110 500C130 470 190 470 205 500C215 530 180 560 150 555C120 550 95 530 110 500Z"/><path d="M250 520C290 495 340 520 335 560C330 600 285 610 260 585C240 565 238 535 250 520Z"/><path d="M140 640C170 620 220 640 215 690C210 730 160 745 135 715C115 690 120 655 140 640Z"/><path d="M280 650C310 640 345 660 335 700C325 735 290 730 275 705C265 685 265 660 280 650Z"/></g></g><path d="M17.8 417.4Q108.9 339.7 200.0 372.0" fill="none" stroke="#38bdf8" stroke-opacity=".4" stroke-width="1.2" stroke-dasharray="2 6" stroke-linecap="round"/><path d="M200.0 372.0Q291.1 339.7 382.2 417.4" fill="none" stroke="#38bdf8" stroke-opacity=".4" stroke-width="1.2" stroke-dasharray="2 6" stroke-linecap="round"/><path d="M144.7 552.0Q81.3 429.7 17.8 417.4" fill="none" stroke="#38bdf8" stroke-opacity=".4" stroke-width="1.2" stroke-dasharray="2 6" stroke-linecap="round"/><path d="M268.8 604.2Q325.5 455.8 382.2 417.4" fill="none" stroke="#38bdf8" stroke-opacity=".4" stroke-width="1.2" stroke-dasharray="2 6" stroke-linecap="round"/><path d="M144.7 552.0Q206.7 523.1 268.8 604.2" fill="none" stroke="#38bdf8" stroke-opacity=".4" stroke-width="1.2" stroke-dasharray="2 6" stroke-linecap="round"/><g transform="translate(40.4 459.8) rotate(-28) scale(1.0)"><path d="M-10 0L0 -46L10 0Z M-7 -16H7 M-4.5 -30H4.5 M-7 -16L4.5 -30 M7 -16L-4.5 -30" fill="none" stroke="#7dd3fc" stroke-width="1.6" stroke-linejoin="round" stroke-opacity=".85"/><circle cy="-48" r="2.6" fill="#e0f2fe"/><path class="sig" style="animation-delay:0.00s" d="M-5.7 -53.7A8 8 0 0 1 5.7 -53.7" fill="none" stroke="#7dd3fc" stroke-width="1.4" stroke-linecap="round"/><path class="sig" style="animation-delay:0.30s" d="M-9.9 -57.9A14 14 0 0 1 9.9 -57.9" fill="none" stroke="#7dd3fc" stroke-width="1.4" stroke-linecap="round"/><path class="sig" style="animation-delay:0.60s" d="M-14.1 -62.1A20 20 0 0 1 14.1 -62.1" fill="none" stroke="#7dd3fc" stroke-width="1.4" stroke-linecap="round"/></g><g transform="translate(200.0 420.0) rotate(0) scale(1.0)"><path d="M-10 0L0 -46L10 0Z M-7 -16H7 M-4.5 -30H4.5 M-7 -16L4.5 -30 M7 -16L-4.5 -30" fill="none" stroke="#7dd3fc" stroke-width="1.6" stroke-linejoin="round" stroke-opacity=".85"/><circle cy="-48" r="2.6" fill="#e0f2fe"/><path class="sig" style="animation-delay:0.35s" d="M-5.7 -53.7A8 8 0 0 1 5.7 -53.7" fill="none" stroke="#7dd3fc" stroke-width="1.4" stroke-linecap="round"/><path class="sig" style="animation-delay:0.65s" d="M-9.9 -57.9A14 14 0 0 1 9.9 -57.9" fill="none" stroke="#7dd3fc" stroke-width="1.4" stroke-linecap="round"/><path class="sig" style="animation-delay:0.95s" d="M-14.1 -62.1A20 20 0 0 1 14.1 -62.1" fill="none" stroke="#7dd3fc" stroke-width="1.4" stroke-linecap="round"/></g><g transform="translate(359.6 459.8) rotate(28) scale(1.0)"><path d="M-10 0L0 -46L10 0Z M-7 -16H7 M-4.5 -30H4.5 M-7 -16L4.5 -30 M7 -16L-4.5 -30" fill="none" stroke="#7dd3fc" stroke-width="1.6" stroke-linejoin="round" stroke-opacity=".85"/><circle cy="-48" r="2.6" fill="#e0f2fe"/><path class="sig" style="animation-delay:0.70s" d="M-5.7 -53.7A8 8 0 0 1 5.7 -53.7" fill="none" stroke="#7dd3fc" stroke-width="1.4" stroke-linecap="round"/><path class="sig" style="animation-delay:1.00s" d="M-9.9 -57.9A14 14 0 0 1 9.9 -57.9" fill="none" stroke="#7dd3fc" stroke-width="1.4" stroke-linecap="round"/><path class="sig" style="animation-delay:1.30s" d="M-14.1 -62.1A20 20 0 0 1 14.1 -62.1" fill="none" stroke="#7dd3fc" stroke-width="1.4" stroke-linecap="round"/></g><g transform="translate(150.0 590.0) rotate(-8) scale(0.8)"><path d="M-10 0L0 -46L10 0Z M-7 -16H7 M-4.5 -30H4.5 M-7 -16L4.5 -30 M7 -16L-4.5 -30" fill="none" stroke="#7dd3fc" stroke-width="1.6" stroke-linejoin="round" stroke-opacity=".85"/><circle cy="-48" r="2.6" fill="#e0f2fe"/><path class="sig" style="animation-delay:1.05s" d="M-5.7 -53.7A8 8 0 0 1 5.7 -53.7" fill="none" stroke="#7dd3fc" stroke-width="1.4" stroke-linecap="round"/><path class="sig" style="animation-delay:1.35s" d="M-9.9 -57.9A14 14 0 0 1 9.9 -57.9" fill="none" stroke="#7dd3fc" stroke-width="1.4" stroke-linecap="round"/><path class="sig" style="animation-delay:1.65s" d="M-14.1 -62.1A20 20 0 0 1 14.1 -62.1" fill="none" stroke="#7dd3fc" stroke-width="1.4" stroke-linecap="round"/></g><g transform="translate(265.0 640.0) rotate(6) scale(0.75)"><path d="M-10 0L0 -46L10 0Z M-7 -16H7 M-4.5 -30H4.5 M-7 -16L4.5 -30 M7 -16L-4.5 -30" fill="none" stroke="#7dd3fc" stroke-width="1.6" stroke-linejoin="round" stroke-opacity=".85"/><circle cy="-48" r="2.6" fill="#e0f2fe"/><path class="sig" style="animation-delay:1.40s" d="M-5.7 -53.7A8 8 0 0 1 5.7 -53.7" fill="none" stroke="#7dd3fc" stroke-width="1.4" stroke-linecap="round"/><path class="sig" style="animation-delay:1.70s" d="M-9.9 -57.9A14 14 0 0 1 9.9 -57.9" fill="none" stroke="#7dd3fc" stroke-width="1.4" stroke-linecap="round"/><path class="sig" style="animation-delay:2.00s" d="M-14.1 -62.1A20 20 0 0 1 14.1 -62.1" fill="none" stroke="#7dd3fc" stroke-width="1.4" stroke-linecap="round"/></g></svg></div>
+<div class="wrap">
+<h1>SpeedUp</h1>
+<div class="tabs">
+  <button id="t1" class="on">فحص السرعة</button>
+  <button id="t2">مراقبة الصيانة</button>
+</div>
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_internet_speed_test/flutter_internet_speed_test.dart';
-import 'package:http/http.dart' as http;
-import 'package:url_launcher/url_launcher.dart';
+<!-- ============ فحص السرعة ============ -->
+<section id="p1">
+  <div class="card big">
+    <div class="p" id="phase">جاهز</div>
+    <svg id="g1" class="gsvg" viewBox="0 0 300 252"></svg>
+    <button class="go" id="start">ابدأ الفحص</button>
+    <div class="bar"><i id="prog"></i></div>
+  </div>
+  <div class="card grid">
+    <div class="m"><small>التحميل</small><div class="v" id="dl">--</div><span class="u">Mbps</span></div>
+    <div class="m"><small>الرفع</small><div class="v" id="ul">--</div><span class="u">Mbps</span></div>
+    <div class="m"><small>البينغ (السيرفر)</small><div class="v" id="pg">--</div><span class="u">ms</span></div>
+    <div class="m"><small>بينغ دولي (Google)</small><div class="v" id="gg">--</div><span class="u">ms</span></div>
+    <div class="m"><small>Jitter</small><div class="v" id="jt">--</div><span class="u">ms</span></div>
+    <div class="m"><small>فقد الحزم</small><div class="v" id="ls">--</div><span class="u">%</span></div>
+  </div>
 
-import 'network_ping.dart';
+  <div class="card">
+    <div class="info">
+      <b>السيرفر</b><span id="srv">...</span>
+      <b>عنوان IP العام</b><span id="ip">...</span>
+      <b>مزود الخدمة</b><span id="isp">...</span>
+      <b>IP الجهاز المحلي</b><span id="lip">...</span>
+      <b>اختيار السيرفر</b><span><select id="srvsel" style="width:100%;background:#0e1628;color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:6px;font:inherit"></select></span>
+    </div>
+    <div id="srvwarn" class="note" style="color:var(--amber);margin-top:8px"></div>
+  </div>
 
-void main() => runApp(const SpeedSkyApp());
+  <div class="card" style="margin-top:12px" id="dlcard">
+    <b style="font-size:14px">حمّل التطبيق (يعمل في الخلفية)</b>
+    <p class="note" style="margin:6px 0 10px">التطبيق يراقب البينغ في الخلفية ويعرض IP الجهاز على الشبكة المنزلية.</p>
+    <a class="dl" id="dl-android" href="app/speedup.apk" download>⬇ تحميل للأندرويد (APK)</a>
+    <a class="dl alt" id="dl-ios" href="app/ios.html">تثبيت على الآيفون</a>
+    <p class="note" style="margin:8px 0 0">بعد التحميل على الأندرويد فعّل «التثبيت من مصدر غير معروف» عند الطلب.</p>
+  </div>
+</section>
 
-class SpeedSkyApp extends StatelessWidget {
-  const SpeedSkyApp({super.key});
+<!-- ============ مراقبة الصيانة ============ -->
+<section id="p2" class="hide">
+  <div class="card">
+    <div class="status"><div class="dot" id="mdot"></div><span id="mtxt">متوقف</span></div>
+    <svg id="g2" class="gsvg" viewBox="0 0 300 252"></svg>
+    <div class="info" style="margin-top:10px">
+      <b>بينغ السيرفر</b><span id="mc">--</span>
+      <b>بينغ دولي (Google)</b><span id="mg">--</span>
+      <b>المتوسط / الأدنى / الأعلى</b><span id="mst">--</span>
+      <b>فقد الحزم</b><span id="mls">--</span>
+      <b>مدة التشغيل</b><span id="mup">--</span>
+    </div>
+  </div>
+  <div class="card">
+    <canvas id="chart"></canvas>
+    <div class="legend">
+      <span><i style="background:var(--blue)"></i>السيرفر</span>
+      <span><i style="background:var(--green)"></i>دولي (Google)</span>
+      <span><i style="background:var(--red)"></i>انقطاع</span>
+    </div>
+  </div>
+  <button class="go" id="mstart">بدء المراقبة</button>
+  <div class="card" style="margin-top:12px">
+    <b style="font-size:14px">سجل الانقطاعات</b>
+    <div class="log" id="log"><div><span style="color:var(--mut)">لا يوجد انقطاعات بعد</span></div></div>
+  </div>
+  <p class="note">لأفضل نتيجة: اترك الصفحة مفتوحة وشاشة الجهاز شغّالة (يتم منع انطفاء الشاشة تلقائياً). المتصفحات توقف الصفحات المخفية في الخلفية، لذلك الأفضل تثبيت الصفحة على جهاز مخصص للمراقبة.</p>
+</section>
+</div>
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Speed Sky',
-      theme: ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF071320),
-        cardColor: const Color(0xFF101C2D),
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.cyan,
-          brightness: Brightness.dark,
-        ),
-      ),
-      home: const SpeedSkyHome(),
-    );
+<script>
+const $ = id => document.getElementById(id);
+const CF = 'https://speed.cloudflare.com';
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/* ---------- العدّاد (مؤشر) ---------- */
+let _gid=0;
+function makeGauge(svg, ticks, map, unitTxt){
+  const NS='http://www.w3.org/2000/svg', cx=150, cy=128, r=100, A0=150, SW=240, id='gg'+(++_gid);
+  const pt=(f,rad)=>{const a=(A0+SW*f)*Math.PI/180;return [cx+rad*Math.cos(a), cy+rad*Math.sin(a)]};
+  const arc=(f0,f1,rad)=>{const [x0,y0]=pt(f0,rad),[x1,y1]=pt(f1,rad);return `M${x0.toFixed(1)} ${y0.toFixed(1)}A${rad} ${rad} 0 ${(f1-f0)*SW>180?1:0} 1 ${x1.toFixed(1)} ${y1.toFixed(1)}`};
+  const el=(n,a,t)=>{const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);if(t!=null)e.textContent=t;svg.appendChild(e);return e};
+  const defs=el('defs',{});
+  const rg=document.createElementNS(NS,'radialGradient');
+  rg.setAttribute('id',id+'f'); rg.setAttribute('cx','50%'); rg.setAttribute('cy','45%'); rg.setAttribute('r','60%');
+  [['0','#1c2f55'],['1','#0d1527']].forEach(([o,c])=>{const st=document.createElementNS(NS,'stop');st.setAttribute('offset',o);st.setAttribute('stop-color',c);rg.appendChild(st)});
+  defs.appendChild(rg);
+  el('circle',{cx,cy,r:122,fill:'#070d1a'});
+  el('circle',{cx,cy,r:119,fill:'none',stroke:'#38bdf8','stroke-opacity':.55,'stroke-width':2.5});
+  el('circle',{cx,cy,r:116,fill:`url(#${id}f)`});
+  el('path',{d:arc(0.86,1,r+4),fill:'none',stroke:'#f87171','stroke-width':7});
+  const sorted=[...ticks].sort((a,b)=>a-b);
+  for(let i=0;i<sorted.length-1;i++){
+    const f0=map(sorted[i]), f1=map(sorted[i+1]);
+    for(let j=1;j<5;j++){ const f=f0+(f1-f0)*j/5,[x1,y1]=pt(f,r-1),[x2,y2]=pt(f,r-8); el('line',{x1,y1,x2,y2,stroke:'#6b7fa8','stroke-width':1.2}); }
   }
+  sorted.forEach(t=>{
+    const f=map(t),[x1,y1]=pt(f,r-1),[x2,y2]=pt(f,r-14),[tx,ty]=pt(f,r-28);
+    el('line',{x1,y1,x2,y2,stroke:'#e8eefc','stroke-width':2.4});
+    el('text',{x:tx,y:ty+4,'text-anchor':'middle','font-size':11,'font-weight':800,fill:'#cfe3ff'},t);
+  });
+  el('text',{x:cx,y:cy-38,'text-anchor':'middle','font-size':11,'font-weight':800,'font-style':'italic','letter-spacing':2,fill:'#8ea0c6'},'SPEEDUP');
+  el('rect',{x:cx-46,y:cy+34,width:92,height:34,rx:6,fill:'#070d1a',stroke:'#22304f','stroke-width':1.5});
+  const val=el('text',{x:cx,y:cy+58,'text-anchor':'middle','font-size':22,'font-weight':800,fill:'#38bdf8','font-family':'ui-monospace,Menlo,Consolas,monospace'},'0');
+  el('text',{x:cx,y:cy+84,'text-anchor':'middle','font-size':11,'font-weight':700,fill:'#8ea0c6'},unitTxt);
+  const needle=el('polygon',{points:`${cx+r-12},${cy} ${cx},${cy-3.5} ${cx-20},${cy-2} ${cx-20},${cy+2} ${cx},${cy+3.5}`,fill:'#38bdf8'});
+  needle.style.filter='drop-shadow(0 0 4px #38bdf8)';
+  el('circle',{cx,cy,r:10,fill:'#0b1220',stroke:'#38bdf8','stroke-width':2});
+  let cur=0,target=0,raf=null;
+  function draw(){ needle.setAttribute('transform',`rotate(${A0+SW*cur} ${cx} ${cy})`); }
+  function loop(){
+    cur+=(target-cur)*0.18;
+    if(Math.abs(target-cur)<0.0005){cur=target;raf=null}else raf=requestAnimationFrame(loop);
+    draw();
+  }
+  draw();
+  return { set(v,text,col){
+    if(v!==undefined) target=Math.min(1,Math.max(0,v==null?0:map(v)));
+    if(text!=null) val.textContent=text;
+    if(col){ val.setAttribute('fill',col); needle.setAttribute('fill',col); needle.style.filter=`drop-shadow(0 0 4px ${col})`; }
+    if(!raf) raf=requestAnimationFrame(loop);
+  }};
+}
+const speedMap=v=>Math.min(1,Math.log10(1+Math.max(0,v))/Math.log10(1001));
+const g1=makeGauge($('g1'),[0,1,5,10,50,100,250,500,1000],speedMap,'Mbps');
+const g2=makeGauge($('g2'),[0,50,100,150,200,300],v=>Math.min(1,Math.max(0,v)/300),'ms');
+function setLive(txt){ const n=parseFloat(txt); g1.set(isNaN(n)?undefined:n, String(txt)); }
+
+
+/* ---------- تبويبات ---------- */
+$('t1').onclick = () => tab(1); $('t2').onclick = () => tab(2);
+function tab(n){
+  $('p1').classList.toggle('hide', n!==1); $('p2').classList.toggle('hide', n!==2);
+  $('t1').classList.toggle('on', n===1); $('t2').classList.toggle('on', n===2);
+  if(n===2) drawChart();
 }
 
-class SpeedSkyHome extends StatefulWidget {
-  const SpeedSkyHome({super.key});
-
-  @override
-  State<SpeedSkyHome> createState() => _SpeedSkyHomeState();
+/* ---------- معلومات السيرفر و IP ---------- */
+/* ---------- السيرفرات ----------
+   ضع هنا سيرفرات LibreSpeed الموجودة داخل سوريا (الرابط = المجلد الذي فيه garbage.php و empty.php و getIP.php).
+   type: 'ls' = LibreSpeed (محلي) ، 'cf' = Cloudflare (خارجي للمقارنة فقط) */
+const CFG=window.SPEEDUP_CONFIG||{};
+const SERVERS=CFG.servers||[
+  {name:'سيرفر محلي (عدّل الرابط)', base:'https://speedtest.example.sy/backend/', type:'ls', local:true},
+  {name:'Cloudflare', base:'https://speed.cloudflare.com', type:'cf', local:false}
+];
+let SRV=null, forced=-1;
+const root=s=>s.base.replace(/\/+$/,'');
+const U={
+  ping:s=>s.type==='cf'?`${root(s)}/__down?bytes=0&r=${Math.random()}`:`${root(s)}/empty.php?r=${Math.random()}`,
+  down:s=>s.type==='cf'?`${root(s)}/__down?bytes=25000000&r=${Math.random()}`:`${root(s)}/garbage.php?ckSize=100&r=${Math.random()}`,
+  up:s=>s.type==='cf'?`${root(s)}/__up?r=${Math.random()}`:`${root(s)}/empty.php?r=${Math.random()}`
+};
+async function rawPing(s,timeout=2000){
+  const c=new AbortController(), t=setTimeout(()=>c.abort(),timeout), t0=performance.now();
+  try{ await fetch(U.ping(s),{cache:'no-store',signal:c.signal}); return performance.now()-t0; }
+  catch(e){ return null; } finally{ clearTimeout(t); }
 }
-
-class _SpeedSkyHomeState extends State<SpeedSkyHome> {
-  final FlutterInternetSpeedTest _speedTest = FlutterInternetSpeedTest();
-  final Random _random = Random();
-  Timer? _backgroundTimer;
-  Timer? _demoTimer;
-
-  bool _isTesting = false;
-  bool _backgroundPingEnabled = true;
-
-  double _downloadMbps = 0.0;
-  double _uploadMbps = 0.0;
-  int _pingMs = 0;
-  int _googlePingMs = 0;
-  int _routerPingMs = 0;
-  int _uploadLatencyMs = 0;
-  int _signalStrength = 0;
-  double _networkLoad = 0.0;
-  String _statusText = 'جاهز للفحص';
-  String _serverName = 'Google Edge - Dubai';
-  String _selectedPeriod = 'اليوم';
-  String _dataUsageResult = '0.0 GB';
-
-  final List<double> _speedHistory = List<double>.filled(18, 0.0);
-  final List<String> _servers = [
-    'Google Edge - Dubai',
-    'Cloudflare - Frankfurt',
-    'Akamai - Singapore',
-    'AWS - Kuwait',
-    'Google Edge - Istanbul',
-    'Telecom Core - Amman',
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    _startBackgroundMonitoring();
-  }
-
-  @override
-  void dispose() {
-    _backgroundTimer?.cancel();
-    _demoTimer?.cancel();
-    super.dispose();
-  }
-
-  Future<void> _startSpeedTest() async {
-    if (!mounted) return;
-
-    if (kIsWeb) {
-      setState(() {
-        _isTesting = true;
-        _statusText = 'وضع المتصفح: تقدير تجريبي فقط';
-        _googlePingMs = 0;
-        _routerPingMs = 0;
-        _pingMs = 0;
-        _uploadLatencyMs = 0;
-        _downloadMbps = 0.0;
-        _uploadMbps = 0.0;
-        _networkLoad = 0.0;
-        _signalStrength = 0;
-        _speedHistory.fillRange(0, _speedHistory.length, 0.0);
-      });
-      _runWebDemo();
-      return;
+async function pickServer(){
+  if(forced>=0){ SRV=SERVERS[forced]; return SRV; }
+  const res=await Promise.all(SERVERS.map(async s=>{
+    await rawPing(s); const v=[];
+    for(let i=0;i<3;i++){ const x=await rawPing(s); if(x!=null) v.push(x); }
+    v.sort((a,b)=>a-b); return v.length?v[v.length>>1]:null;
+  }));
+  let best=-1,bestL=-1;
+  res.forEach((ms,i)=>{ if(ms==null) return; if(best<0||ms<res[best]) best=i; if(SERVERS[i].local&&(bestL<0||ms<res[bestL])) bestL=i; });
+  SRV=SERVERS[bestL>=0?bestL:(best>=0?best:SERVERS.length-1)];
+  return SRV;
+}
+async function loadMeta(){
+  const s=SRV; if(!s) return;
+  $('srvwarn').textContent=s.local?'':'لا يوجد سيرفر محلي متاح، النتيجة عبر الإنترنت الدولي وقد تختلف عن الواقع المحلي.';
+  try{
+    if(s.type==='cf'){
+      const r=await fetch(root(s)+'/meta',{cache:'no-store'}); const m=await r.json();
+      $('srv').textContent=`Cloudflare — ${m.city||''} ${m.country||''} (${m.colo||''}) · خارجي`;
+      $('ip').textContent=m.clientIp||'--'; $('isp').textContent=m.asOrganization||'--';
+    }else{
+      $('srv').textContent=`${s.name} · محلي`;
+      const r=await fetch(root(s)+'/getIP.php?isp=true',{cache:'no-store'}); const m=await r.json();
+      const p=String(m.processedString||'').split(' - ');
+      $('ip').textContent=p[0]||'--'; $('isp').textContent=p.slice(1).join(' - ')||'--';
     }
+  }catch(e){ $('srv').textContent=s.name+' (تعذر جلب المعلومات)'; }
+}
+async function refreshServer(){ $('srv').textContent='جارٍ اختيار أقرب سيرفر...'; await pickServer(); await loadMeta(); }
+async function init(){
+  const sel=$('srvsel');
+  sel.innerHTML='<option value="-1">تلقائي (الأقرب محلياً)</option>'+SERVERS.map((x,i)=>`<option value="${i}">${x.name}${x.local?' (محلي)':' (خارجي)'}</option>`).join('');
+  sel.onchange=async()=>{ forced=+sel.value; SRV=null; await refreshServer(); };
+  await refreshServer();
+}
+function localIP(){
+  try{
+    const pc = new RTCPeerConnection({iceServers:[]});
+    pc.createDataChannel('x');
+    pc.onicecandidate = e => {
+      if(!e.candidate) return;
+      const m = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);
+      if(m && !/^0\./.test(m[1])){ $('lip').textContent = m[1]; pc.close(); }
+    };
+    pc.createOffer().then(o => pc.setLocalDescription(o));
+    setTimeout(() => { if($('lip').textContent === '...') $('lip').textContent = 'مخفي من المتصفح'; }, 2500);
+  }catch(e){ $('lip').textContent = 'غير مدعوم'; }
+}
+init(); localIP();
 
-    final googlePing = await _measureGooglePing();
-    final routerPing = await _measureRouterPing();
+/* ---------- أدوات البينغ ---------- */
+async function pingSrv(timeout=3000){
+  const c = new AbortController(); const t = setTimeout(() => c.abort(), timeout);
+  const t0 = performance.now();
+  try{
+    await fetch(U.ping(SRV), {cache:'no-store', signal:c.signal});
+    return performance.now() - t0;
+  }catch(e){ return null; } finally{ clearTimeout(t); }
+}
+async function pingGoogle(timeout=3000){
+  const c = new AbortController(); const t = setTimeout(() => c.abort(), timeout);
+  const t0 = performance.now();
+  try{
+    await fetch(`https://www.google.com/generate_204?r=${Math.random()}`, {mode:'no-cors', cache:'no-store', signal:c.signal});
+    return performance.now() - t0;
+  }catch(e){ return null; } finally{ clearTimeout(t); }
+}
+const avg = a => a.reduce((x,y)=>x+y,0)/a.length;
 
-    setState(() {
-      _isTesting = true;
-      _statusText = 'جار قياس السرعة...';
-      _googlePingMs = googlePing;
-      _routerPingMs = routerPing;
-      _pingMs = googlePing;
-      _uploadLatencyMs = 0;
-      _downloadMbps = 0.0;
-      _uploadMbps = 0.0;
-      _networkLoad = 0.0;
-      _signalStrength = 0;
-      _speedHistory.fillRange(0, _speedHistory.length, 0.0);
-    });
+/* ---------- فحص السرعة ---------- */
+let running = false, abortAll = null;
+$('start').onclick = async () => {
+  if(running){ abortAll && abortAll(); return; }
+  running = true;
+  const btn = $('start'); btn.textContent = 'إيقاف'; btn.classList.add('stop');
+  ['dl','ul','pg','gg','jt','ls'].forEach(k => $(k).textContent = '--');
+  g1.set(0,'0','#38bdf8');
+  if(!SRV) await pickServer();
+  const ctrl = new AbortController(); abortAll = () => ctrl.abort();
+  try{
+    await testPing(ctrl.signal);
+    await testDownload(ctrl.signal);
+    await testUpload(ctrl.signal);
+    $('phase').textContent = 'اكتمل الفحص'; setLive('✓');
+  }catch(e){ $('phase').textContent = 'تم الإيقاف'; }
+  running = false; btn.textContent = 'إعادة الفحص'; btn.classList.remove('stop'); $('prog').style.width = '0';
+};
 
-    _speedTest.startTesting(
-      onStarted: () {},
-      onProgress: (percent, data) {
-        if (!mounted) return;
+async function testPing(sig){
+  $('phase').textContent = 'قياس البينغ...'; setLive('…');
+  await pingSrv(); // تسخين الاتصال
+  const a = [], g = []; let lost = 0; const N = 12;
+  for(let i=0;i<N;i++){
+    if(sig.aborted) throw 0;
+    const x = await pingSrv(); x==null ? lost++ : a.push(x);
+    const y = await pingGoogle(); y!=null && g.push(y);
+    $('prog').style.width = ((i+1)/N*100)+'%';
+    await sleep(120);
+  }
+  if(a.length){
+    { const sa=[...a].sort((x,y)=>x-y); $('pg').textContent = Math.round(sa[sa.length>>1]); }
+    $('jt').textContent = (a.slice(1).reduce((s,v,i)=>s+Math.abs(v-a[i]),0)/Math.max(1,a.length-1)).toFixed(1);
+  }
+  if(g.length) $('gg').textContent = Math.round(avg(g));
+  $('ls').textContent = Math.round(lost/N*100);
+}
 
-        final value = data.unit == SpeedUnit.mbps
-            ? data.transferRate
-            : data.transferRate / 1000;
-
-        if (data.type == TestType.download) {
-          setState(() {
-            _downloadMbps = value.clamp(0.0, 1000.0);
-            _networkLoad = (_downloadMbps / 100).clamp(0.0, 1.0);
-            _signalStrength = _downloadMbps.clamp(0.0, 100.0).round();
-            _statusText = 'تحميل: ${_downloadMbps.toStringAsFixed(1)} Mbps';
-            _speedHistory.add(_networkLoad);
-            if (_speedHistory.length > 18) {
-              _speedHistory.removeAt(0);
-            }
-          });
-        } else if (data.type == TestType.upload) {
-          setState(() {
-            _uploadMbps = value.clamp(0.0, 1000.0);
-            _statusText = 'رفع: ${_uploadMbps.toStringAsFixed(1)} Mbps';
-          });
+async function testDownload(sig){
+  $('phase').textContent = 'قياس التحميل...'; g1.set(undefined,null,'#38bdf8');
+  const DUR = (CFG.downloadSeconds||12)*1000, WARM = 2000, STREAMS = CFG.downloadStreams||6;
+  const c = new AbortController(); sig.addEventListener('abort', () => c.abort());
+  let bytes = 0, b0 = 0, t0 = null; const start = performance.now();
+  const worker = async () => {
+    while(performance.now()-start < DUR && !c.signal.aborted){
+      try{
+        const r = await fetch(U.down(SRV), {cache:'no-store', signal:c.signal});
+        const rd = r.body.getReader();
+        while(true){
+          const {done, value} = await rd.read(); if(done) break;
+          bytes += value.length;
+          if(performance.now()-start >= DUR){ c.abort(); break; }
         }
-      },
-      onCompleted: (download, upload) {
-        if (!mounted) return;
-
-        final downloadRate = download.unit == SpeedUnit.mbps
-            ? download.transferRate
-            : download.transferRate / 1000;
-        final uploadRate = upload.unit == SpeedUnit.mbps
-            ? upload.transferRate
-            : upload.transferRate / 1000;
-
-        setState(() {
-          _downloadMbps = downloadRate.clamp(0.0, 1000.0);
-          _uploadMbps = uploadRate.clamp(0.0, 1000.0);
-          _signalStrength = _downloadMbps.clamp(0.0, 100.0).round();
-          _networkLoad = (_downloadMbps / 100).clamp(0.0, 1.0);
-          _dataUsageResult = '${(_downloadMbps / 10).toStringAsFixed(1)} GB';
-          _statusText = 'تم إكمال الفحص';
-          _serverName = _servers.first;
-          _speedHistory.add(_networkLoad);
-          if (_speedHistory.length > 18) {
-            _speedHistory.removeAt(0);
-          }
-          _isTesting = false;
-        });
-      },
-      onError: (errorMessage, speedTestError) {
-        if (!mounted) return;
-        setState(() {
-          _statusText = 'تعذر اختبار الاتصال';
-          _isTesting = false;
-          _downloadMbps = 0.0;
-          _uploadMbps = 0.0;
-          _googlePingMs = 0;
-          _routerPingMs = 0;
-          _pingMs = 0;
-        });
-      },
-      onDefaultServerSelectionInProgress: () {},
-      onDefaultServerSelectionDone: (_) {},
-      useFastApi: true,
-    );
-  }
-
-  Future<void> _runWebDemo() async {
-    _demoTimer?.cancel();
-
-    try {
-      setState(() {
-        _statusText = 'جارٍ قياس الاتصال عبر المتصفح...';
-        _downloadMbps = 0.0;
-        _uploadMbps = 0.0;
-        _networkLoad = 0.0;
-      });
-
-      final pingStart = Stopwatch()..start();
-      await http.get(Uri.parse('https://www.google.com')).timeout(const Duration(seconds: 8));
-      final pingMs = pingStart.elapsedMilliseconds;
-
-      final downloadSize = 8 * 1024 * 1024;
-      final downloadStart = Stopwatch()..start();
-      final response = await http
-          .get(Uri.parse('https://speed.cloudflare.com/__down?bytes=$downloadSize'))
-          .timeout(const Duration(seconds: 30));
-      final elapsedSeconds = downloadStart.elapsedMilliseconds / 1000;
-      final bytes = response.contentLength ?? response.bodyBytes.length;
-      final downloadMbps = (bytes > 0 && elapsedSeconds > 0)
-          ? ((bytes / (1024 * 1024)) / elapsedSeconds) * 8
-          : 0.0;
-      final uploadMbps = (downloadMbps * 0.42).clamp(0.0, 1000.0);
-      final normalized = (downloadMbps / 100).clamp(0.0, 1.0);
-
-      if (!mounted) return;
-      setState(() {
-        _downloadMbps = downloadMbps.clamp(0.0, 1000.0);
-        _uploadMbps = uploadMbps;
-        _pingMs = pingMs;
-        _googlePingMs = pingMs;
-        _routerPingMs = pingMs;
-        _uploadLatencyMs = (pingMs / 2).round();
-        _signalStrength = _downloadMbps.clamp(0.0, 100.0).round();
-        _networkLoad = normalized;
-        _statusText = 'تم إكمال الفحص (تقدير متصفح)';
-        _speedHistory.add(normalized);
-        if (_speedHistory.length > 18) {
-          _speedHistory.removeAt(0);
-        }
-        _isTesting = false;
-      });
-    } catch (_) {
-      if (!mounted) return;
-      setState(() {
-        _statusText = 'وضع المتصفح: الفحص الحقيقي يتطلب خادم قريب';
-        _downloadMbps = 0.0;
-        _uploadMbps = 0.0;
-        _pingMs = 0;
-        _googlePingMs = 0;
-        _routerPingMs = 0;
-        _uploadLatencyMs = 0;
-        _signalStrength = 0;
-        _networkLoad = 0.0;
-        _isTesting = false;
-      });
+      }catch(e){ break; }
     }
-  }
-
-  void _stopTesting() {
-    _demoTimer?.cancel();
-    setState(() {
-      _isTesting = false;
-      _statusText = 'تم إيقاف الفحص';
-      _dataUsageResult = '${(_downloadMbps / 10).toStringAsFixed(1)} GB';
-    });
-  }
-
-  Future<int> _measureGooglePing() async => measureGooglePing();
-
-  Future<int> _measureRouterPing() async => measureLocalRouterPing();
-
-  void _startBackgroundMonitoring() {
-    _backgroundTimer = Timer.periodic(const Duration(seconds: 4), (_) async {
-      if (kIsWeb || !_backgroundPingEnabled || _isTesting || !mounted) return;
-      final google = await _measureGooglePing();
-      if (!mounted) return;
-      setState(() {
-        _googlePingMs = google;
-        _pingMs = google;
-      });
-    });
-  }
-
-  Future<void> _openDownloadLink(String platform) async {
-    final url = platform == 'android'
-        ? 'https://play.google.com/'
-        : 'https://www.apple.com/app-store/';
-
-    final uri = Uri.parse(url);
-    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تعذر فتح رابط التحميل')),
-      );
-    }
-  }
-
-  void _updateUsagePeriod(String period) {
-    setState(() {
-      _selectedPeriod = period;
-      _dataUsageResult = '0.0 GB';
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final downloadText = '${_downloadMbps.toStringAsFixed(1)} Mbps';
-    final uploadText = '${_uploadMbps.toStringAsFixed(1)} Mbps';
-    final googlePingText = _googlePingMs > 0 ? '$_googlePingMs ms' : '0 ms';
-    final routerPingText = _routerPingMs > 0 ? '$_routerPingMs ms' : '0 ms';
-    final uploadLatencyText = _uploadLatencyMs > 0 ? '$_uploadLatencyMs ms' : '0 ms';
-
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: const Color(0xFF071320),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Speed Sky Web',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-                      decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(999),
-                        border: Border.all(color: Colors.green.withOpacity(0.35)),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.fiber_manual_record, size: 8, color: Colors.green),
-                          const SizedBox(width: 6),
-                          Text(
-                            _pingMs > 0 ? 'PING $_pingMs ms' : 'نشط',
-                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 18),
-
-                Container(
-                  padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF102746), Color(0xFF0A172A)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: Colors.white12),
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('حالة الشبكة', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                          Switch(
-                            value: _backgroundPingEnabled,
-                            activeColor: Colors.cyan,
-                            onChanged: (value) {
-                              setState(() => _backgroundPingEnabled = value);
-                            },
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        downloadText,
-                        style: const TextStyle(
-                          fontSize: 42,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: -1,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      const Text('تنزيل', style: TextStyle(color: Colors.white60, fontSize: 13)),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _miniCard('رفع', uploadText, Colors.cyanAccent),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _miniCard('PING', googlePingText, Colors.orangeAccent),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: _isTesting ? _stopTesting : _startSpeedTest,
-                        icon: Icon(_isTesting ? Icons.stop_rounded : Icons.play_arrow_rounded),
-                        label: Text(_isTesting ? 'إيقاف الفحص' : 'ابدأ فحص الموقع'),
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size.fromHeight(58),
-                          backgroundColor: _isTesting ? Colors.redAccent : Colors.cyan,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 18),
-
-                if (_statusText.isNotEmpty)
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.cyan.withOpacity(0.08),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.cyan.withOpacity(0.3)),
-                    ),
-                    child: Text(
-                      _statusText,
-                      style: const TextStyle(color: Colors.cyanAccent, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-
-                const SizedBox(height: 18),
-
-                Card(
-                  color: const Color(0xFF101C2D),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Row(
-                              children: [
-                                Icon(Icons.dns_rounded, color: Colors.cyan),
-                                SizedBox(width: 8),
-                                Text('اسم السيرفر', style: TextStyle(fontSize: 12, color: Colors.white60)),
-                              ],
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.green.withOpacity(0.12),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Text('LIVE', style: TextStyle(color: Colors.green, fontSize: 10, fontWeight: FontWeight.bold)),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            _serverName,
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        LinearProgressIndicator(
-                          value: _networkLoad,
-                          minHeight: 10,
-                          backgroundColor: Colors.white12,
-                          valueColor: const AlwaysStoppedAnimation<Color>(Colors.cyan),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 18),
-
-                Card(
-                  color: const Color(0xFF101C2D),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        const Row(
-                          children: [
-                            Icon(Icons.show_chart_rounded, color: Colors.cyanAccent),
-                            SizedBox(width: 8),
-                            Text('سرعة الشبكة', style: TextStyle(fontWeight: FontWeight.bold)),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          height: 170,
-                          child: CustomPaint(
-                            painter: _SpeedLinePainter(_speedHistory),
-                            child: Container(),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('0', style: TextStyle(color: Colors.white54, fontSize: 11)),
-                            Text('50', style: TextStyle(color: Colors.white54, fontSize: 11)),
-                            Text('100%', style: TextStyle(color: Colors.white54, fontSize: 11)),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 18),
-
-                Row(
-                  children: [
-                    Expanded(child: _metricCard('بينغ الراوتر', routerPingText, Icons.router_rounded, Colors.orange)),
-                    const SizedBox(width: 12),
-                    Expanded(child: _metricCard('توتر الإرسال', uploadLatencyText, Icons.upload_rounded, Colors.green)),
-                  ],
-                ),
-
-                const SizedBox(height: 18),
-
-                Row(
-                  children: [
-                    Expanded(child: _metricCard('قوة الإشارة', '$_signalStrength%', Icons.signal_cellular_4_bar_rounded, Colors.cyan)),
-                    const SizedBox(width: 12),
-                    Expanded(child: _metricCard('Google Ping', googlePingText, Icons.public_rounded, Colors.amber)),
-                  ],
-                ),
-
-                const SizedBox(height: 18),
-
-                Card(
-                  color: const Color(0xFF101C2D),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Row(
-                          children: [
-                            Icon(Icons.analytics_outlined, color: Colors.amber),
-                            SizedBox(width: 8),
-                            Text('إستهلاك البيانات', style: TextStyle(fontWeight: FontWeight.bold)),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: ['اليوم', 'آخر 7 أيام', 'هذا الشهر'].map((period) {
-                            final selected = _selectedPeriod == period;
-                            return ChoiceChip(
-                              label: Text(period),
-                              selected: selected,
-                              selectedColor: Colors.amber,
-                              backgroundColor: const Color(0xFF0F172A),
-                              labelStyle: TextStyle(
-                                color: selected ? Colors.black : Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              onSelected: (_) => _updateUsagePeriod(period),
-                            );
-                          }).toList(),
-                        ),
-                        const SizedBox(height: 18),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text('القيمة', style: TextStyle(color: Colors.white70)),
-                            Text(
-                              _dataUsageResult,
-                              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.amber),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 18),
-
-                if (!kIsWeb)
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF101C2D),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.white12),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('تحميل التطبيق', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: () => _openDownloadLink('android'),
-                                icon: const Icon(Icons.android_rounded),
-                                label: const Text('Android'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: () => _openDownloadLink('ios'),
-                                icon: const Icon(Icons.apple_rounded),
-                                label: const Text('iPhone'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  foregroundColor: Colors.black,
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _miniCard(String label, String value, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.04),
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: const TextStyle(color: Colors.white60, fontSize: 11)),
-          const SizedBox(height: 10),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              color: color,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _metricCard(String title, String value, IconData icon, Color color) {
-    return Card(
-      color: const Color(0xFF101C2D),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, color: color),
-            const SizedBox(height: 12),
-            Text(title, style: const TextStyle(fontSize: 12, color: Colors.white60)),
-            const SizedBox(height: 8),
-            Text(value, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-          ],
-        ),
-      ),
-    );
-  }
+  };
+  const tick = setInterval(() => {
+    const now = performance.now(), el = now-start;
+    if(t0===null && el>=WARM){ t0 = now; b0 = bytes; }
+    if(t0!==null){ const mb = (bytes-b0)*8/((now-t0)/1000)/1e6; setLive(mb.toFixed(1)); }
+    $('prog').style.width = Math.min(100, el/DUR*100)+'%';
+  }, 200);
+  await Promise.all(Array.from({length:STREAMS}, worker));
+  clearInterval(tick);
+  if(sig.aborted) throw 0;
+  const end = performance.now();
+  const mb = t0 ? (bytes-b0)*8/((end-t0)/1000)/1e6 : bytes*8/((end-start)/1000)/1e6;
+  $('dl').textContent = mb.toFixed(1); setLive(mb.toFixed(1));
 }
 
-class _SpeedLinePainter extends CustomPainter {
-  final List<double> values;
-
-  _SpeedLinePainter(this.values);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final bg = Paint()..color = const Color(0xFF0A1320);
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(0, 0, size.width, size.height),
-        const Radius.circular(16),
-      ),
-      bg,
-    );
-
-    final grid = Paint()
-      ..color = Colors.white12
-      ..strokeWidth = 1;
-
-    for (int i = 0; i <= 3; i++) {
-      final y = (size.height / 3) * i;
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), grid);
+async function testUpload(sig){
+  $('phase').textContent = 'قياس الرفع...'; g1.set(undefined,null,'#34d399');
+  const DUR = (CFG.uploadSeconds||10)*1000, WARM = 2000, STREAMS = CFG.uploadStreams||4;
+  const buf = new Uint8Array(4*1024*1024); for(let i=0;i<buf.length;i+=65536) crypto.getRandomValues(buf.subarray(i, Math.min(i+65536, buf.length)));
+  const blob = new Blob([buf]);
+  let bytes = 0, b0 = 0, t0 = null; const start = performance.now(); const xhrs = new Set(); let stop = false;
+  sig.addEventListener('abort', () => { stop = true; xhrs.forEach(x => x.abort()); });
+  const worker = async () => {
+    while(performance.now()-start < DUR && !stop){
+      await new Promise(res => {
+        const x = new XMLHttpRequest(); xhrs.add(x); let last = 0;
+        x.open('POST', U.up(SRV));
+        x.upload.onprogress = e => { bytes += e.loaded-last; last = e.loaded; };
+        x.onloadend = () => { xhrs.delete(x); res(); };
+        x.send(blob);
+      });
     }
-
-    if (values.isEmpty) return;
-
-    final points = <Offset>[];
-    final maxIndex = values.length - 1;
-
-    for (int i = 0; i < values.length; i++) {
-      final x = (size.width / (maxIndex == 0 ? 1 : maxIndex)) * i;
-      final normalized = values[i].clamp(0.0, 1.0);
-      final y = size.height - (normalized * size.height);
-      points.add(Offset(x, y));
-    }
-
-    final path = Path()..moveTo(points.first.dx, points.first.dy);
-    for (int i = 1; i < points.length; i++) {
-      path.lineTo(points[i].dx, points[i].dy);
-    }
-
-    final fill = Path.from(path)
-      ..lineTo(points.last.dx, size.height)
-      ..lineTo(points.first.dx, size.height)
-      ..close();
-
-    final linePaint = Paint()
-      ..color = Colors.cyanAccent
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.5;
-
-    final fillPaint = Paint()
-      ..color = Colors.cyanAccent.withOpacity(0.18)
-      ..style = PaintingStyle.fill;
-
-    canvas.drawPath(fill, fillPaint);
-    canvas.drawPath(path, linePaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant _SpeedLinePainter oldDelegate) => oldDelegate.values != values;
+  };
+  const tick = setInterval(() => {
+    const now = performance.now(), el = now-start;
+    if(t0===null && el>=WARM){ t0 = now; b0 = bytes; }
+    if(t0!==null){ setLive(((bytes-b0)*8/((now-t0)/1000)/1e6).toFixed(1)); }
+    $('prog').style.width = Math.min(100, el/DUR*100)+'%';
+    if(el>=DUR){ stop = true; xhrs.forEach(x => x.abort()); }
+  }, 200);
+  await Promise.all(Array.from({length:STREAMS}, worker));
+  clearInterval(tick);
+  if(sig.aborted) throw 0;
+  const end = performance.now();
+  const mb = t0 ? (bytes-b0)*8/((end-t0)/1000)/1e6 : bytes*8/((end-start)/1000)/1e6;
+  $('ul').textContent = mb.toFixed(1); setLive(mb.toFixed(1));
 }
+
+/* ---------- مراقبة الصيانة ---------- */
+const MAXPTS = 120;
+const sCF = [], sG = [], fails = [];
+let mon = null, startTs = 0, total = 0, lostN = 0, downSince = null, wake = null, cfMin=1e9, cfMax=0, cfSum=0, cfCnt=0;
+
+$('mstart').onclick = async () => {
+  if(mon){ stopMon(); return; }
+  if('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
+  try{ if('wakeLock' in navigator) wake = await navigator.wakeLock.request('screen'); }catch(e){}
+  if(!SRV) await pickServer();
+  startTs = Date.now(); mon = setInterval(monTick, CFG.monitorIntervalMs||1000); monTick();
+  $('mstart').textContent = 'إيقاف المراقبة'; $('mstart').classList.add('stop');
+  $('mtxt').textContent = 'جارٍ الفحص...';
+};
+function stopMon(){
+  clearInterval(mon); mon = null; try{ wake && wake.release(); }catch(e){} wake = null;
+  $('mstart').textContent = 'بدء المراقبة'; $('mstart').classList.remove('stop');
+  $('mdot').className = 'dot'; $('mtxt').textContent = 'متوقف'; g2.set(0,'0','#8ea0c6');
+}
+document.addEventListener('visibilitychange', async () => {
+  if(mon && document.visibilityState === 'visible' && 'wakeLock' in navigator){
+    try{ wake = await navigator.wakeLock.request('screen'); }catch(e){}
+  }
+});
+
+async function monTick(){
+  const [a, g] = await Promise.all([pingSrv(2500), pingGoogle(2500)]);
+  total++;
+  const down = (a==null && g==null);
+  if(a==null) lostN++;
+  sCF.push(a); sG.push(g); fails.push(down);
+  if(sCF.length > MAXPTS){ sCF.shift(); sG.shift(); fails.shift(); }
+  if(a!=null){ cfMin=Math.min(cfMin,a); cfMax=Math.max(cfMax,a); cfSum+=a; cfCnt++; }
+
+  if(down && downSince===null){
+    downSince = Date.now(); setStatus(false); alertDown();
+    addLog('r', 'انقطع الإنترنت', timeStr(downSince));
+  }else if(!down && downSince!==null){
+    const d = Math.round((Date.now()-downSince)/1000);
+    addLog('g', `عاد الإنترنت بعد ${d} ثانية`, timeStr(Date.now()));
+    downSince = null; setStatus(true);
+  }else if(!down && downSince===null){ setStatus(true); }
+
+  g2.set(a==null?0:a, a==null?'—':String(Math.round(a)), a==null?'#f87171':a<80?'#34d399':a<200?'#fbbf24':'#f87171');
+  $('mc').textContent = a==null ? 'انتهت المهلة' : Math.round(a)+' ms';
+  $('mg').textContent = g==null ? 'انتهت المهلة' : Math.round(g)+' ms';
+  $('mst').textContent = cfCnt ? `${Math.round(cfSum/cfCnt)} / ${Math.round(cfMin)} / ${Math.round(cfMax)} ms` : '--';
+  $('mls').textContent = (lostN/total*100).toFixed(1)+'%';
+  const s = Math.floor((Date.now()-startTs)/1000);
+  $('mup').textContent = `${Math.floor(s/60)}د ${s%60}ث`;
+  drawChart();
+}
+function setStatus(ok){
+  $('mdot').className = 'dot '+(ok?'ok':'bad');
+  $('mtxt').textContent = ok ? 'الإنترنت يعمل' : 'الإنترنت مفصول!';
+}
+function timeStr(t){ return new Date(t).toLocaleTimeString('ar-SY'); }
+function addLog(cls, txt, time){
+  const l = $('log'); if(l.firstChild && l.firstChild.querySelector('span[style]')) l.innerHTML = '';
+  const d = document.createElement('div'); d.innerHTML = `<span class="${cls}">${txt}</span><span style="color:var(--mut)">${time}</span>`;
+  l.prepend(d);
+}
+function alertDown(){
+  try{ navigator.vibrate && navigator.vibrate([300,150,300]); }catch(e){}
+  try{
+    const ac = new (window.AudioContext||window.webkitAudioContext)(); const o = ac.createOscillator();
+    o.frequency.value = 880; o.connect(ac.destination); o.start(); setTimeout(() => { o.stop(); ac.close(); }, 500);
+  }catch(e){}
+  try{ if('Notification' in window && Notification.permission==='granted') new Notification('انقطع الإنترنت'); }catch(e){}
+}
+
+/* ---------- الرسم البياني ---------- */
+function drawChart(){
+  const cv = $('chart'); if(!cv.offsetWidth) return;
+  const dpr = window.devicePixelRatio||1, W = cv.clientWidth, H = cv.clientHeight;
+  cv.width = W*dpr; cv.height = H*dpr;
+  const x = cv.getContext('2d'); x.scale(dpr,dpr); x.clearRect(0,0,W,H);
+  const vals = [...sCF, ...sG].filter(v => v!=null);
+  const maxV = Math.max(100, ...vals) * 1.15;
+  const padL = 34, padB = 16, w = W-padL-4, h = H-padB-6;
+  x.font = '10px sans-serif'; x.fillStyle = '#8ea0c6'; x.strokeStyle = '#22304f'; x.lineWidth = 1;
+  for(let i=0;i<=4;i++){
+    const yy = 4 + h - h*i/4; x.beginPath(); x.moveTo(padL,yy); x.lineTo(W-4,yy); x.stroke();
+    x.fillText(Math.round(maxV*i/4), 2, yy+3);
+  }
+  const step = w/(MAXPTS-1), off = MAXPTS - fails.length;
+  fails.forEach((f,i) => { if(f){ x.fillStyle = 'rgba(248,113,113,.35)'; x.fillRect(padL+(off+i)*step-step/2, 4, step, h); } });
+  const line = (arr, col) => {
+    x.strokeStyle = col; x.lineWidth = 2; x.beginPath(); let pen = false;
+    arr.forEach((v,i) => {
+      if(v==null){ pen = false; return; }
+      const px = padL+(off+i)*step, py = 4 + h - h*Math.min(v,maxV)/maxV;
+      pen ? x.lineTo(px,py) : x.moveTo(px,py); pen = true;
+    }); x.stroke();
+  };
+  line(sG, '#34d399'); line(sCF, '#38bdf8');
+}
+window.addEventListener('resize', drawChart);
+if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
+</script>
+</body>
+</html>
