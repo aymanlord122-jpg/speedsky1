@@ -92,7 +92,7 @@ class _SpeedSkyHomeState extends State<SpeedSkyHome> {
     if (kIsWeb) {
       setState(() {
         _isTesting = true;
-        _statusText = 'وضع الموقع: اختبار تجريبي';
+        _statusText = 'وضع المتصفح: تقدير تجريبي فقط';
         _googlePingMs = 0;
         _routerPingMs = 0;
         _pingMs = 0;
@@ -232,7 +232,7 @@ class _SpeedSkyHomeState extends State<SpeedSkyHome> {
         _uploadLatencyMs = (pingMs / 2).round();
         _signalStrength = _downloadMbps.clamp(0.0, 100.0).round();
         _networkLoad = normalized;
-        _statusText = 'تم إكمال الفحص';
+        _statusText = 'تم إكمال الفحص (تقدير متصفح)';
         _speedHistory.add(normalized);
         if (_speedHistory.length > 18) {
           _speedHistory.removeAt(0);
@@ -242,7 +242,7 @@ class _SpeedSkyHomeState extends State<SpeedSkyHome> {
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _statusText = 'تعذر قياس السرعة في المتصفح';
+        _statusText = 'وضع المتصفح: الفحص الحقيقي يتطلب خادم قريب';
         _downloadMbps = 0.0;
         _uploadMbps = 0.0;
         _pingMs = 0;
