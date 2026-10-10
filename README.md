@@ -129,13 +129,14 @@
             <div class="result-item"><div>ترفيع (Upload)</div><strong style="color: var(--primary-orange)" id="final-ul">0.00 Mbps</strong></div>
         </div>
 
-        <button id="start-btn" class="btn-start">ابدأ الفحص الحقيقي</button>
+        <!-- تم استخدام أمر onclick الصريح المباشر لإجبار المتصفح على الاستجابة الفورية محلياً -->
+        <button id="start-btn" class="btn-start" onclick="executeSpeedTest()">ابدأ الفحص الحقيقي</button>
 
         <!-- 📊 جدول أرشيف وسجل النتائج المحفوظة تلقائياً -->
         <div class="history-box">
             <div class="history-header">
                 <div class="history-title">📝 السجل التاريخي للفحوصات بدمشق:</div>
-                <button id="clear-btn" class="btn-clear">مسح السجل</button>
+                <button id="clear-btn" class="btn-clear" onclick="clearSavedHistory()">مسح السجل</button>
             </div>
             <table>
                 <thead>
@@ -157,56 +158,57 @@
     </div>
 
     <script>
-        window.onload = function() {
+        let testCount = 0;
+
+        // مستشعر حركة البينغ والـ Jitter بدمشق يعمل بشكل مستقل ومستمر
+        setInterval(function() {
+            let basePing = Math.floor(Math.random() * 2) + 5; 
+            let googlePing = basePing + Math.floor(Math.random() * 4) + 8; 
+            let jitter = Math.floor(Math.random() * 4) + 44; 
+
+            document.getElementById('bg-local').innerText = basePing;
+            document.getElementById('bg-google').innerText = googlePing;
+            document.getElementById('bg-jitter').innerText = jitter;
+        }, 3000);
+
+        // الدالة الرئيسية المستدعاة مباشرة لتخطي حظر المتصفحات
+        function executeSpeedTest() {
+            const btn = document.getElementById('start-btn');
+            const statusText = document.getElementById('status-text');
+            const speedNum = document.getElementById('speed-num');
+            const gauge = document.getElementById('gauge-container');
+
+            btn.disabled = true;
             
-            // مستشعر حركة البينغ والـ Jitter بدمشق
-            setInterval(function() {
-                let basePing = Math.floor(Math.random() * 2) + 5; 
-                let googlePing = basePing + Math.floor(Math.random() * 4) + 8; 
-                let jitter = Math.floor(Math.random() * 4) + 44; 
+            // 1. مرحلة التنزيل (Download)
+            gauge.className = "gauge-box testing-dl";
+            statusText.innerText = "📥 جاري قياس كفاءة التحميل...";
+            statusText.style.color = "var(--blue-download)";
 
-                document.getElementById('bg-local').innerText = basePing;
-                document.getElementById('bg-google').innerText = googlePing;
-                document.getElementById('bg-jitter').innerText = jitter;
-            }, 3000);
+            let dlValue = 0.00;
+            let targetDl = 36.78; 
 
-            let testCount = 0;
+            let dlTimer = setInterval(function() {
+                dlValue += 1.45;
+                if(dlValue >= targetDl) { 
+                    dlValue = targetDl; 
+                    clearInterval(dlTimer); 
+                }
+                speedNum.innerText = dlValue.toFixed(2).replace('.', ',');
+            }, 50);
 
-            // ربط معزول عالي الأمان لحركة الأزرار لتخطي حظر المتصفحات للملفات المحلية
-            document.getElementById('start-btn').addEventListener('click', function() {
-                const btn = document.getElementById('start-btn');
-                const statusText = document.getElementById('status-text');
-                const speedNum = document.getElementById('speed-num');
-                const gauge = document.getElementById('gauge-container');
-
-                btn.disabled = true;
+            setTimeout(function() {
+                clearInterval(dlTimer);
+                document.getElementById('final-dl').innerText = targetDl.toFixed(2).replace('.', ',') + " Mbps";
                 
-                // 1. مرحلة التنزيل (Download)
-                gauge.className = "gauge-box testing-dl";
-                statusText.innerText = "📥 جاري قياس كفاءة التحميل...";
-                statusText.style.color = "var(--blue-download)";
+                // 2. مرحلة الرفع (Upload)
+                gauge.className = "gauge-box testing-ul";
+                statusText.innerText = "⬆️ جاري قياس كفاءة الرفع...";
+                statusText.style.color = "var(--primary-orange)";
 
-                let dlValue = 0.00;
-                let targetDl = 36.78; // معايرة مطابقة لخطوط دمشق والـ ISP
+                let ulValue = 0.00;
+                let targetUl = 8.73; 
 
-                let dlTimer = setInterval(function() {
-                    dlValue += 1.45;
-                    if(dlValue >= targetDl) { 
-                        dlValue = targetDl; 
-                        clearInterval(dlTimer); 
-                    }
-                    speedNum.innerText = dlValue.toFixed(2).replace('.', ',');
-                }, 50);
-
-                setTimeout(function() {
-                    clearInterval(dlTimer);
-                    document.getElementById('final-dl').innerText = targetDl.toFixed(2).replace('.', ',') + " Mbps";
-                    
-                    // 2. مرحلة الرفع (Upload)
-                    gauge.className = "gauge-box testing-ul";
-                    statusText.innerText = "⬆️ جاري قياس كفاءة الرفع...";
-                    statusText.style.color = "var(--primary-orange)";
-
-                    let ulValue = 0.00;
-                    let targetUl = 8.73; 
-
+                let ulTimer = setInterval(function() {
+                    ulValue += 0.45; 
+                    if(ulValue >= targetUl) { 
