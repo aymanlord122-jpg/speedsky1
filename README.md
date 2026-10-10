@@ -39,7 +39,7 @@
         .brand-name { font-size: 26px; font-weight: bold; color: var(--blue-download); margin-bottom: 5px; }
         .header-title { font-size: 14px; color: #cbd5e1; margin-bottom: 25px; }
 
-        /* 🗺️ عداد السرعة الدائري المطور مع صورة خريطة العالم بالخلفية */
+        /* 🗺️ عداد السرعة الدائري مع صورة خريطة العالم بالخلفية */
         .gauge-box {
             position: relative; width: 280px; height: 280px; margin: 0 auto;
             background-color: var(--card-bg);
@@ -77,13 +77,6 @@
             cursor: pointer; box-shadow: 0 4px 15px rgba(242, 101, 34, 0.4); transition: 0.2s; margin-bottom: 25px;
         }
         .btn-start:disabled { background: #475569; box-shadow: none; cursor: not-allowed; }
-
-        .btn-share {
-            background-color: #25D366; color: white; border: none; padding: 12px 40px;
-            font-size: 16px; font-weight: bold; border-radius: 30px; cursor: pointer;
-            margin-top: 15px; display: none; margin-left: auto; margin-right: auto;
-            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
-        }
 
         /* 📊 جدول حفظ النتائج السابقة وحذفها تلقائياً */
         .history-box {
@@ -137,7 +130,6 @@
         </div>
 
         <button id="start-btn" class="btn-start">ابدأ الفحص الحقيقي</button>
-        <button id="share-btn" class="btn-share">📢 مشاركة النتيجة عبر الواتساب</button>
 
         <!-- 📊 جدول أرشيف وسجل النتائج المحفوظة تلقائياً -->
         <div class="history-box">
@@ -183,13 +175,11 @@
             // ربط معزول عالي الأمان لحركة الأزرار لتخطي حظر المتصفحات للملفات المحلية
             document.getElementById('start-btn').addEventListener('click', function() {
                 const btn = document.getElementById('start-btn');
-                const shareBtn = document.getElementById('share-btn');
                 const statusText = document.getElementById('status-text');
                 const speedNum = document.getElementById('speed-num');
                 const gauge = document.getElementById('gauge-container');
 
                 btn.disabled = true;
-                shareBtn.style.display = "none";
                 
                 // 1. مرحلة التنزيل (Download)
                 gauge.className = "gauge-box testing-dl";
@@ -205,3 +195,18 @@
                         dlValue = targetDl; 
                         clearInterval(dlTimer); 
                     }
+                    speedNum.innerText = dlValue.toFixed(2).replace('.', ',');
+                }, 50);
+
+                setTimeout(function() {
+                    clearInterval(dlTimer);
+                    document.getElementById('final-dl').innerText = targetDl.toFixed(2).replace('.', ',') + " Mbps";
+                    
+                    // 2. مرحلة الرفع (Upload)
+                    gauge.className = "gauge-box testing-ul";
+                    statusText.innerText = "⬆️ جاري قياس كفاءة الرفع...";
+                    statusText.style.color = "var(--primary-orange)";
+
+                    let ulValue = 0.00;
+                    let targetUl = 8.73; 
+
