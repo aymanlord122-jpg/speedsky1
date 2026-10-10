@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
@@ -7,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_internet_speed_test/flutter_internet_speed_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
+
+import 'network_ping.dart';
 
 void main() => runApp(const SpeedSkyApp());
 
@@ -88,12 +89,30 @@ class _SpeedSkyHomeState extends State<SpeedSkyHome> {
   Future<void> _startSpeedTest() async {
     if (!mounted) return;
 
+    if (kIsWeb) {
+      setState(() {
+        _isTesting = true;
+        _statusText = 'وضع الموقع: اختبار تجريبي';
+        _googlePingMs = 0;
+        _routerPingMs = 0;
+        _pingMs = 0;
+        _uploadLatencyMs = 0;
+        _downloadMbps = 0.0;
+        _uploadMbps = 0.0;
+        _networkLoad = 0.0;
+        _signalStrength = 0;
+        _speedHistory.fillRange(0, _speedHistory.length, 0.0);
+      });
+      _runWebDemo();
+      return;
+    }
+
     final googlePing = await _measureGooglePing();
     final routerPing = await _measureRouterPing();
 
     setState(() {
       _isTesting = true;
-      _statusText = kIsWeb ? 'وضع الموقع: اختبار تجريبي' : 'جار قياس السرعة...';
+      _statusText = 'جار قياس السرعة...';
       _googlePingMs = googlePing;
       _routerPingMs = routerPing;
       _pingMs = googlePing;
@@ -104,11 +123,6 @@ class _SpeedSkyHomeState extends State<SpeedSkyHome> {
       _signalStrength = 0;
       _speedHistory.fillRange(0, _speedHistory.length, 0.0);
     });
-
-    if (kIsWeb) {
-      _runWebDemo();
-      return;
-    }
 
     _speedTest.startTesting(
       onStarted: () {},
@@ -251,33 +265,13 @@ class _SpeedSkyHomeState extends State<SpeedSkyHome> {
     });
   }
 
-  Future<int> _measureGooglePing() async {
-    final stopwatch = Stopwatch()..start();
-    final client = HttpClient();
-    try {
-      final request = await client.getUrl(Uri.parse('https://www.google.com'));
-      final response = await request.close().timeout(const Duration(seconds: 8));
-      await response.drain<void>();
-      return stopwatch.elapsedMilliseconds;
-    } catch (_) {
-      return 0;
-    } finally {
-      client.close(force: true);
-    }
-  }
+  Future<int> _measureGooglePing() async => measureGooglePing();
 
-  Future<int> _measureRouterPing() async {
-    try {
-      final addresses = await InternetAddress.lookup('192.168.1.1');
-      return addresses.isNotEmpty ? 12 : 0;
-    } catch (_) {
-      return 0;
-    }
-  }
+  Future<int> _measureRouterPing() async => measureLocalRouterPing();
 
   void _startBackgroundMonitoring() {
     _backgroundTimer = Timer.periodic(const Duration(seconds: 4), (_) async {
-      if (!_backgroundPingEnabled || _isTesting || !mounted) return;
+      if (kIsWeb || !_backgroundPingEnabled || _isTesting || !mounted) return;
       final google = await _measureGooglePing();
       if (!mounted) return;
       setState(() {
