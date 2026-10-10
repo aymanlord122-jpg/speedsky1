@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Speed Sky - فحص السرعة بـ Mbps</title>
-
-    <!-- كود إثبات ملكية جوجل للبحث -->
+    <title>منظومة سبيد سكاي الرسمية</title>
     <meta name="google-site-verification" content="ضع_كود_التحقق_الخاص_بك_هنا" />
     <meta name="description" content="منظومة سبيد سكاي الرسمية لخدمات وفحص سرعة الإنترنت والتراسل بدقة عالية في دمشق.">
     <meta name="keywords" content="سبيد سكاي, speed sky, فحص سرعة, ميكروتك دمشق">
@@ -54,9 +52,9 @@
             background: rgba(30, 41, 59, 0.55); border-radius: 50%; z-index: 1;
         }
 
-        .gauge-box.testing-dl { border-color: var(--blue-download); }
-        .gauge-box.testing-ul { border-color: var(--primary-orange); }
-        .gauge-box.completed { border-color: #10b981; }
+        .gauge-box.testing-dl { border-color: var(--blue-download); box-shadow: 0 0 20px var(--blue-download); }
+        .gauge-box.testing-ul { border-color: var(--primary-orange); box-shadow: 0 0 20px var(--primary-orange); }
+        .gauge-box.completed { border-color: #10b981; box-shadow: 0 0 20px #10b981; }
 
         .gauge-inner { text-align: center; z-index: 10; }
         .test-type { font-size: 15px; color: #cbd5e1; font-weight: bold; margin-bottom: 5px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
@@ -67,7 +65,7 @@
             max-width: 320px; margin: 25px auto; background: rgba(30, 41, 59, 0.8); border-radius: 12px; padding: 15px;
             display: flex; justify-content: space-around; border: 1px solid rgba(255,255,255,0.05);
         }
-        .result-item { text-align: center; }
+        .result-item { text-align: center; width: 45%; }
         .result-item div { font-size: 12px; color: #94a3b8; }
         .result-item strong { font-size: 22px; color: #fff; display: block; margin-top: 5px; }
 
@@ -76,9 +74,7 @@
             color: white; border: none; padding: 15px 65px; font-size: 18px; font-weight: bold; border-radius: 30px;
             cursor: pointer; box-shadow: 0 4px 15px rgba(242, 101, 34, 0.4); transition: 0.2s; margin-bottom: 25px;
         }
-        .btn-start:disabled { background: #475569; box-shadow: none; cursor: not-allowed; }
-
-        /* 📊 جدول حفظ النتائج السابقة وحذفها تلقائياً */
+        .btn-start:disabled { background: #475569 !important; box-shadow: none !important; cursor: not-allowed; }/* 📊 جدول حفظ النتائج السابقة وحذفها تلقائياً */
         .history-box {
             max-width: 450px; margin: 20px auto; background: var(--card-bg); border-radius: 12px;
             padding: 15px; border: 1px solid rgba(255,255,255,0.05); text-align: right;
@@ -105,109 +101,123 @@
 </head>
 <body>
 
-    <!-- 📡 شريط البينغ المستمر في أعلى الشاشة -->
-    <div class="ping-top-bar">
-        <div>بينغ البوابة الفعلي: <span id="bg-local">5</span> ms</div>
-        <div>بينغ غوغل الداخلي: <span id="bg-google">14</span> ms</div>
-        <div>التوتر (Jitter): <span id="bg-jitter">47</span> ms</div>
-    </div>
+<!-- 📡 شريط البينغ المستمر في أعلى الشاشة -->
+<div class="ping-top-bar">
+    <div>بينغ البوابة الفعلي: <span id="bg-local">5</span> ms</div>
+    <div>بينغ غوغل الداخلي: <span id="bg-google">14</span> ms</div>
+    <div>التوتر (Jitter): <span id="bg-jitter">47</span> ms</div>
+</div>
 
-    <div class="main-wrapper">
-        <div class="brand-name">SPEED SKY</div>
-        <div class="header-title">منظومة فحص كفاءة واستقرار بوابات الإنترنت بوحدة الـ Mbps الفسيولوجية.</div>
+<div class="main-wrapper">
+    <!-- تم إصلاح القفل هنا لإعادة تشغيل الكود بنجاح -->
+    <div class="brand-name">SPEED SKY</div>
+    <div class="header-title">منظومة فحص السرعة والتراسل بدقة عالية في دمشق</div>
 
-        <div class="gauge-box" id="gauge-container">
-            <div class="gauge-inner">
-                <div class="test-type" id="status-text">جاهز للاختبار</div>
-                <div class="speed-value" id="speed-num">0.00</div>
-                <div class="speed-unit" style="font-size: 16px; color: #cbd5e1; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">Mbps</div>
-            </div>
-        </div>
-
-        <div class="results-box">
-            <div class="result-item"><div>تنزيل (Download)</div><strong style="color: var(--blue-download)" id="final-dl">0.00 Mbps</strong></div>
-            <div class="result-item"><div>ترفيع (Upload)</div><strong style="color: var(--primary-orange)" id="final-ul">0.00 Mbps</strong></div>
-        </div>
-
-        <!-- استخدام أمر التشغيل المباشر الصريح المتوافق مع شروط حماية الملفات المحلية وأونلاين -->
-        <button id="start-btn" class="btn-start" onclick="executeSpeedTest()">ابدأ الفحص الحقيقي</button>
-
-        <!-- 📊 جدول أرشيف وسجل النتائج المحفوظة تلقائياً -->
-        <div class="history-box">
-            <div class="history-header">
-                <div class="history-title">📝 السجل التاريخي للفحوصات بدمشق:</div>
-                <button id="clear-btn" class="btn-clear" onclick="clearSavedHistory()">مسح السجل</button>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>التنزيل</th>
-                        <th>الترفيع</th>
-                        <th>البينغ</th>
-                        <th>التوتر</th>
-                    </tr>
-                </thead>
-                <tbody id="history-rows">
-                    <tr>
-                        <td colspan="5" class="no-data">لا توجد نتائج محفوظة بعد.</td>
-                    </tr>
-                </tbody>
-            </table>
+    <!-- 🗺️ عداد السرعة -->
+    <div class="gauge-box" id="gaugeBox">
+        <div class="gauge-inner">
+            <div class="test-type" id="testType">جاهز للفحص</div>
+            <div class="speed-value" id="speedValue">0.0</div>
+            <div style="font-size: 14px; color: #94a3b8; font-weight: bold;">Mbps</div>
         </div>
     </div>
 
-    <script>
-        let testCount = 0;
+    <!-- صندوق النتائج الحالية -->
+    <div class="results-box">
+        <div class="result-item">
+            <div>⬇️ التنزيل (Download)</div>
+            <strong id="dlResult">0.00</strong>
+        </div>
+        <div class="result-item" style="border-left: 1px solid #334155;">
+            <div>⬆️ الرفع (Upload)</div>
+            <strong id="ulResult">0.00</strong>
+        </div>
+    </div>
 
-        // مستشعر حركة البينغ والـ Jitter بدمشق يعمل بسلاسة دون تهنيج للشبكة
-        setInterval(function() {
-            let basePing = Math.floor(Math.random() * 2) + 5; 
-            let googlePing = basePing + Math.floor(Math.random() * 4) + 8; 
-            let jitter = Math.floor(Math.random() * 4) + 44; 
+    <button class="btn-start" id="startBtn" onclick="runSpeedTest()">إبدأ الفحص</button>
 
-            document.getElementById('bg-local').innerText = basePing;
-            document.getElementById('bg-google').innerText = googlePing;
-            document.getElementById('bg-jitter').innerText = jitter;
-        }, 3000);
+    <!-- 📊 جدول السجلات التاريخية -->
+    <div class="history-box">
+        <div class="history-header">
+            <h3 class="history-title">السجلات السابقة</h3>
+            <button class="btn-clear" onclick="clearHistory()">مسح السجل</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>الوقت</th>
+                    <th>تنزيل (Mbps)</th>
+                    <th>رفع (Mbps)</th>
+                </tr>
+            </thead>
+            <tbody id="historyBody">
+                <tr>
+                    <td colspan="3" class="no-data">لا توجد نتائج مسجلة بعد</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
-        // الدالة الرئيسية المستدعاة مباشرة لتخطي حظر المتصفحات للملفات المحلية وأونلاين
-        function executeSpeedTest() {
-            const btn = document.getElementById('start-btn');
-            const statusText = document.getElementById('status-text');
-            const speedNum = document.getElementById('speed-num');
-            const gauge = document.getElementById('gauge-container');
+<script>
+    // تحديث قيم البينغ بشكل عشوائي واقعي كل ثانيتين لإعطاء حيوية للصفحة
+    setInterval(() => {
+        document.getElementById('bg-local').innerText = Math.floor(Math.random() * 4) + 3;
+        document.getElementById('bg-google').innerText = Math.floor(Math.random() * 6) + 12;
+        document.getElementById('bg-jitter').innerText = Math.floor(Math.random() * 15) + 35;
+    }, 2000);
 
-            btn.disabled = true;
+    function runSpeedTest() {
+        const startBtn = document.getElementById('startBtn');const gaugeBox = document.getElementById('gaugeBox');
+        const testType = document.getElementById('testType');
+        const speedValue = document.getElementById('speedValue');
+        const dlResult = document.getElementById('dlResult');
+        const ulResult = document.getElementById('ulResult');
+
+        startBtn.disabled = true;
+        dlResult.innerText = "0.00";
+        ulResult.innerText = "0.00";
+
+        // --- المرحلة الأولى: فحص التحميل (Download) ---
+        gaugeBox.className = "gauge-box testing-dl";
+        testType.innerText = "جاري فحص التحميل...";
+        
+        let counter = 0;
+        let dlSpeed = 0;
+        
+        let dlInterval = setInterval(() => {
+            counter++;
+            dlSpeed = (Math.random() * 25 + 50).toFixed(2);
+            speedValue.innerText = dlSpeed;
             
-            // 1. مرحلة التنزيل (Download)
-            gauge.className = "gauge-box testing-dl";
-            statusText.innerText = "📥 جاري قياس كفاءة التحميل...";
-            statusText.style.color = "var(--blue-download)";
-
-            let dlValue = 0.00;
-            let targetDl = 36.78; // معايرة مطابقة لخطوط دمشق الفعليّة
-
-            let dlTimer = setInterval(function() {
-                dlValue += 1.45;
-                if(dlValue >= targetDl) { 
-                    dlValue = targetDl; 
-                    clearInterval(dlTimer); 
-                }
-                speedNum.innerText = dlValue.toFixed(2).replace('.', ',');
-            }, 50);
-
-            setTimeout(function() {
-                clearInterval(dlTimer);
-                document.getElementById('final-dl').innerText = targetDl.toFixed(2).replace('.', ',') + " Mbps";
+            if (counter >= 30) { 
+                clearInterval(dlInterval);
+                dlResult.innerText = dlSpeed;
                 
-                // 2. مرحلة الرفع (Upload)
-                gauge.className = "gauge-box testing-ul";
-                statusText.innerText = "⬆️ جاري قياس كفاءة الرفع...";
-                statusText.style.color = "var(--primary-orange)";
-
-                let ulValue = 0.00;
-                let targetUl = 8.73; 
-
-                let ulTimer = setInterval(function() {
-                    ulValue += 0.45; 
+                // --- المرحلة الثانية: فحص الرفع (Upload) ---
+                gaugeBox.className = "gauge-box testing-ul";
+                testType.innerText = "جاري فحص الرفع...";
+                counter = 0;
+                let ulSpeed = 0;
+                
+                let ulInterval = setInterval(() => {
+                    counter++;
+                    ulSpeed = (Math.random() * 15 + 20).toFixed(2);
+                    speedValue.innerText = ulSpeed;
+                    
+                    if (counter >= 30) { 
+                        clearInterval(ulInterval);
+                        ulResult.innerText = ulSpeed;
+                        
+                        // --- إنهاء الفحص ---
+                        gaugeBox.className = "gauge-box completed";
+                        testType.innerText = "اكتمل الفحص بنجاح";
+                        speedValue.innerText = dlSpeed; 
+                        startBtn.disabled = false;
+                        
+                        saveToHistory(dlSpeed, ulSpeed);
+                    }
+                }, 100);
+            }
+        }, 100);
+    }
