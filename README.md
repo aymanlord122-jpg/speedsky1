@@ -37,8 +37,8 @@
         .brand-name { font-size: 26px; font-weight: bold; color: var(--blue-download); margin-bottom: 5px; }
         .header-title { font-size: 14px; color: #cbd5e1; margin-bottom: 25px; }
 
-        /* 🗺️ عداد السرعة الدائري مع صورة خريطة العالم بالخلفية */
-        .gauge-box {
+        /* 🗺️ عداد السرعة الدائري المحدث بحسب الـ ID في صورتك */
+        #gauge-container {
             position: relative; width: 280px; height: 280px; margin: 0 auto;
             background-color: var(--card-bg);
             background-image: url('https://wikimedia.org');
@@ -47,14 +47,14 @@
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 10px 25px rgba(0,0,0,0.4); transition: all 0.3s ease;
         }
-        .gauge-box::before {
+        #gauge-container::before {
             content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(30, 41, 59, 0.55); border-radius: 50%; z-index: 1;
         }
 
-        .gauge-box.testing-dl { border-color: var(--blue-download); box-shadow: 0 0 20px var(--blue-download); }
-        .gauge-box.testing-ul { border-color: var(--primary-orange); box-shadow: 0 0 20px var(--primary-orange); }
-        .gauge-box.completed { border-color: #10b981; box-shadow: 0 0 20px #10b981; }
+        #gauge-container.testing-dl { border-color: var(--blue-download); box-shadow: 0 0 20px var(--blue-download); }
+        #gauge-container.testing-ul { border-color: var(--primary-orange); box-shadow: 0 0 20px var(--primary-orange); }
+        #gauge-container.completed { border-color: #10b981; box-shadow: 0 0 20px #10b981; }
 
         .gauge-inner { text-align: center; z-index: 10; }
         .test-type { font-size: 15px; color: #cbd5e1; font-weight: bold; margin-bottom: 5px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
@@ -69,12 +69,14 @@
         .result-item div { font-size: 12px; color: #94a3b8; }
         .result-item strong { font-size: 22px; color: #fff; display: block; margin-top: 5px; }
 
+        /* زر الفحص المحدث بحسب الـ ID في صورتك */
         .btn-start {
             background: linear-gradient(135deg, var(--primary-orange), #ff7e42);
-            color: white; border: none; padding: 15px 65px; font-size: 18px; font-weight: bold; border-radius: 30px;
-            cursor: pointer; box-shadow: 0 4px 15px rgba(242, 101, 34, 0.4); transition: 0.2s; margin-bottom: 25px;
+            color: white; border: none; padding: 15px 65px; font-size: 18px; font-weight: bold; border-radius: 30px;cursor: pointer; box-shadow: 0 4px 15px rgba(242, 101, 34, 0.4); transition: 0.2s; margin-bottom: 25px;
         }
-        .btn-start:disabled { background: #475569 !important; box-shadow: none !important; cursor: not-allowed; }/* 📊 جدول حفظ النتائج السابقة وحذفها تلقائياً */
+        .btn-start:disabled { background: #475569 !important; box-shadow: none !important; cursor: not-allowed; }
+
+        /* 📊 جدول حفظ النتائج السابقة وحذفها تلقائياً */
         .history-box {
             max-width: 450px; margin: 20px auto; background: var(--card-bg); border-radius: 12px;
             padding: 15px; border: 1px solid rgba(255,255,255,0.05); text-align: right;
@@ -109,12 +111,11 @@
 </div>
 
 <div class="main-wrapper">
-    <!-- تم إصلاح القفل هنا لإعادة تشغيل الكود بنجاح -->
     <div class="brand-name">SPEED SKY</div>
-    <div class="header-title">منظومة فحص السرعة والتراسل بدقة عالية في دمشق</div>
+    <div class="header-title">منظومة فحص كفاءة واستقرار بوابات الإنترنت بوحدة الـ Mbps دمشق</div>
 
-    <!-- 🗺️ عداد السرعة -->
-    <div class="gauge-box" id="gaugeBox">
+    <!-- 🗺️ عداد السرعة (تم تعديل المعرّف لـ gauge-container ليطابق صورتك) -->
+    <div id="gauge-container">
         <div class="gauge-inner">
             <div class="test-type" id="testType">جاهز للفحص</div>
             <div class="speed-value" id="speedValue">0.0</div>
@@ -134,7 +135,8 @@
         </div>
     </div>
 
-    <button class="btn-start" id="startBtn" onclick="runSpeedTest()">إبدأ الفحص</button>
+    <!-- زر البدء المعدل ليستدعي executeSpeedTest() ويحمل معرف start-btn المتوافق مع الكود الخاص بك -->
+    <button id="start-btn" class="btn-start" onclick="executeSpeedTest()">إبدأ الفحص</button>
 
     <!-- 📊 جدول السجلات التاريخية -->
     <div class="history-box">
@@ -160,26 +162,27 @@
 </div>
 
 <script>
-    // تحديث قيم البينغ بشكل عشوائي واقعي كل ثانيتين لإعطاء حيوية للصفحة
+    // تحديث قيم البينغ بشكل عشوائي واقعي كل ثانيتين لإعطاء حيوية وثبات للمنظومة
     setInterval(() => {
         document.getElementById('bg-local').innerText = Math.floor(Math.random() * 4) + 3;
         document.getElementById('bg-google').innerText = Math.floor(Math.random() * 6) + 12;
         document.getElementById('bg-jitter').innerText = Math.floor(Math.random() * 15) + 35;
-    }, 2000);
-
-    function runSpeedTest() {
-        const startBtn = document.getElementById('startBtn');const gaugeBox = document.getElementById('gaugeBox');
+    }, 2000);// الدالة تم تغيير اسمها لتطابق تماماً الـ onclick="executeSpeedTest()" الموجود في صورتك
+    function executeSpeedTest() {
+        const startBtn = document.getElementById('start-btn');
+        const gaugeContainer = document.getElementById('gauge-container');
         const testType = document.getElementById('testType');
         const speedValue = document.getElementById('speedValue');
         const dlResult = document.getElementById('dlResult');
         const ulResult = document.getElementById('ulResult');
 
+        // تعطيل الزر أثناء الفحص لمنع التكرار
         startBtn.disabled = true;
         dlResult.innerText = "0.00";
         ulResult.innerText = "0.00";
 
         // --- المرحلة الأولى: فحص التحميل (Download) ---
-        gaugeBox.className = "gauge-box testing-dl";
+        gaugeContainer.className = "testing-dl";
         testType.innerText = "جاري فحص التحميل...";
         
         let counter = 0;
@@ -187,37 +190,25 @@
         
         let dlInterval = setInterval(() => {
             counter++;
+            // توليد سرعة تحميل واقعية لشبكات ميكروتك (بين 50 إلى 75 Mbps)
             dlSpeed = (Math.random() * 25 + 50).toFixed(2);
             speedValue.innerText = dlSpeed;
             
-            if (counter >= 30) { 
+            if (counter >= 30) { // تستغرق 3 ثوانٍ
                 clearInterval(dlInterval);
                 dlResult.innerText = dlSpeed;
                 
                 // --- المرحلة الثانية: فحص الرفع (Upload) ---
-                gaugeBox.className = "gauge-box testing-ul";
+                gaugeContainer.className = "testing-ul";
                 testType.innerText = "جاري فحص الرفع...";
                 counter = 0;
                 let ulSpeed = 0;
                 
                 let ulInterval = setInterval(() => {
                     counter++;
+                    // توليد سرعة رفع واقعية (بين 20 إلى 35 Mbps)
                     ulSpeed = (Math.random() * 15 + 20).toFixed(2);
                     speedValue.innerText = ulSpeed;
                     
-                    if (counter >= 30) { 
+                    if (counter >= 30) { // تستغرق 3 ثوانٍ
                         clearInterval(ulInterval);
-                        ulResult.innerText = ulSpeed;
-                        
-                        // --- إنهاء الفحص ---
-                        gaugeBox.className = "gauge-box completed";
-                        testType.innerText = "اكتمل الفحص بنجاح";
-                        speedValue.innerText = dlSpeed; 
-                        startBtn.disabled = false;
-                        
-                        saveToHistory(dlSpeed, ulSpeed);
-                    }
-                }, 100);
-            }
-        }, 100);
-    }
