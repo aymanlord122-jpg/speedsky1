@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Speed Sky - فحص السرعة بـ Mbps</title>
 
-    <!-- 🛠️ الشغلة الأولى: كود إثبات ملكية جوجل التلقائي (جاهز للأرشفة) -->
+    <!-- كود إثبات ملكية جوجل للبحث -->
     <meta name="google-site-verification" content="ضع_كود_التحقق_الخاص_بك_هنا" />
     <meta name="description" content="منظومة سبيد سكاي الرسمية لخدمات وفحص سرعة الإنترنت والتراسل بدقة عالية في دمشق.">
     <meta name="keywords" content="سبيد سكاي, speed sky, فحص سرعة, ميكروتك دمشق">
