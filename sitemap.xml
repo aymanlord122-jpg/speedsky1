@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- بدّل العنوان بعنوان موقعك الحقيقي -->
-  <url><loc>https://YOUR-SITE-URL/</loc><lastmod>2026-10-11</lastmod></url>
+<urlset xmlns="http://sitemaps.org">
+  <url>
+    <loc>https://github.io</loc>
+    <lastmod>2026-10-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
 </urlset>
