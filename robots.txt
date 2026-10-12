@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# بدّل العنوان التالي بعنوان موقعك الحقيقي
+Sitemap: https://YOUR-SITE-URL/sitemap.xml
